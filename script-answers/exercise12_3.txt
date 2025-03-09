@@ -1,0 +1,10 @@
+docker container start -i e0
+ls
+cd usr
+ls
+cd src
+ls
+cd app
+ls
+nano index.js
+cat index.js
