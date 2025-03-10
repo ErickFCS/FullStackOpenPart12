@@ -1,0 +1,9 @@
+docker ps
+docker exec -it 3f bash
+redis-cli
+keys *
+get addedTodos
+set addedTodos 9001
+del addedTodos
+exit
+exit
