@@ -1,0 +1,36 @@
+services:
+  server:
+    container_name: server
+    image: my-app-backend
+    build:
+      context: .
+      dockerfile: dockerfile
+    environment:
+      BACKEND_URI: "mongodb://root:password@mongo:27017/Persons"
+      URI: "mongodb://root:password@mongo:27017/Persons"
+    ports:
+      - 3001:3001
+    volumes:
+      - backendDeps:/usr/src/app/node_modules
+    depends_on: 
+      - mongo
+  mongo:
+    container_name: mongo-server
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: Persons
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - myAppMongoData:/data/db
+      - myAppMongoConfigData:/data/configdb
+      
+volumes:
+  backendDeps:
+    name: backendDeps
+  myAppMongoData:
+    name: myAppMongoData
+  myAppMongoConfigData:
+    name: myAppMongoConfigData
+    

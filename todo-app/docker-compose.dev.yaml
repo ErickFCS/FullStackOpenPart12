@@ -1,0 +1,60 @@
+services:
+  nginx:
+    container_name: reverse-proxy-server
+    image: nginx:1.25-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - dev-todo-frontend
+  dev-todo-frontend:
+    container_name: dev-todo-frontend
+    image: dev-todo-frontend
+    environment:
+      VITE_BACKEND_URL: http://127.0.0.1:8080/api
+    volumes:
+      - ./todo-frontend/:/usr/src/app
+      - frontDeps:/usr/src/app/node_modules
+    depends_on:
+      - dev-todo-backend
+  dev-todo-backend:
+    container_name: dev-todo-backend
+    image: dev-todo-backend
+    environment:
+      MONGO_URL: mongodb://root:password@mongo:27017/the_database
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./todo-backend/:/usr/src/app
+      - backDeps:/usr/src/app/node_modules
+    depends_on:
+      - mongo
+      - redis
+  mongo:
+    container_name: mongo-server
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: the_database
+    volumes:
+      - ./todo-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - mongoData:/data/db
+      - mongoConfigData:/data/configdb
+  redis:
+    container_name: redis-server
+    image: redis
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redisData:/data
+volumes:
+  redisData:
+    name: redisData
+  mongoData:
+    name: mongoData
+  mongoConfigData:
+    name: mongoConfigData
+  frontDeps:
+    name: frontDeps
+  backDeps:
+    name: backDeps

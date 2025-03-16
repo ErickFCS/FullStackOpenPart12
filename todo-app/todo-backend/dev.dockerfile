@@ -5,16 +5,12 @@ RUN chmod +x /usr/local/bin/dumb-init
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node . .
+COPY . .
 
-RUN npm ci --omit=dev
-
-ENV DEBUG=app:*
-
-USER node
-
-EXPOSE 3000
+RUN npm install
 
 ENTRYPOINT ["dumb-init", "--"]
 
-CMD ["npm", "start"]
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

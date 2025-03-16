@@ -7,14 +7,12 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node . .
 
-RUN npm ci --omit=dev
-
-ENV DEBUG=app:*
+RUN npm ci
 
 USER node
 
-EXPOSE 3000
-
 ENTRYPOINT ["dumb-init", "--"]
+
+EXPOSE 3001
 
 CMD ["npm", "start"]

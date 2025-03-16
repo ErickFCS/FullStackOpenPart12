@@ -1,0 +1,17 @@
+services:
+  app:
+    container_name: app
+    image: dev-my-app-frontend
+    build:
+      context: .
+      dockerfile: dev.dockerfile
+    environment:
+      VITE_BACKEND_URL: http://127.0.0.1:3001
+    ports:
+      - 5173:5173
+    volumes:
+      - ./:/usr/src/app
+      - devFrontendDeps:/usr/src/app/node_modules
+volumes:
+  devFrontendDeps:
+    name: devFrontendDeps

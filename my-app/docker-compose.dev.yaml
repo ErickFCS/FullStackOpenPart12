@@ -1,0 +1,58 @@
+services:
+  nginx:
+    container_name: reverse-proxy-server
+    image: nginx:1.25-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+  app:
+    container_name: app
+    image: dev-my-app-frontend
+    environment:
+      VITE_BACKEND_URL: ''
+    ports:
+      - 5173:5173
+    volumes:
+      - ./FrontEnd/:/usr/src/app
+      - devFrontendDeps:/usr/src/app/node_modules
+    depends_on:
+      - server
+  server:
+    container_name: server
+    image: dev-my-app-backend
+    environment:
+      BACKEND_URI: "mongodb://root:password@mongo:27017/Persons"
+      URI: "mongodb://root:password@mongo:27017/Persons"
+    ports:
+      - 3001:3001
+    volumes:
+      - ./BackEnd/:/usr/src/app
+      - devBackendDeps:/usr/src/app/node_modules
+    depends_on:
+      - mongo
+  mongo:
+    container_name: dev-mongo-server
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: Persons
+    ports:
+      - 3002:27017
+    volumes:
+      - ./BackEnd/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - myAppDevMongoData:/data/db
+      - myAppDevMongoConfigData:/data/configdb
+      
+volumes:
+  devFrontendDeps:
+    name: devFrontendDeps
+  devBackendDeps:
+    name: devBackendDeps
+  myAppDevMongoData:
+    name: myAppDevMongoData
+  myAppDevMongoConfigData:
+    name: myAppDevMongoConfigData

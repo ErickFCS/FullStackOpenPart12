@@ -1,8 +1,12 @@
 services:
   app:
+    container_name: todo-backend
     image: todo-backend
     build: .
     ports:
       - 3000:3000
+    environment:
+      MONGO_URL: mongodb://root:password@127.0.0.1:3001/the_database
+      REDIS_URL: redis://127.0.0.1:3002
     # extra_hosts:
     #   - myhost:host-gateway

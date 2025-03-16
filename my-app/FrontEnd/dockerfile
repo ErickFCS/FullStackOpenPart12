@@ -1,0 +1,20 @@
+FROM node:23-alpine AS building
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN npm ci
+
+ENV VITE_BACKEND_URL=''
+
+RUN npm run build
+
+FROM nginx:1.25-alpine
+
+COPY --from=building /usr/src/app/dist /usr/share/nginx/html
+COPY --from=building /usr/src/app/node_modules/bootstrap/dist/js/bootstrap.js /usr/share/nginx/html/node_modules/bootstrap/dist/js/bootstrap.js
+COPY --from=building /usr/src/app/node_modules/bootstrap/dist/css/bootstrap.css /usr/share/nginx/html/node_modules/bootstrap/dist/css/bootstrap.css
+COPY ./nginx.conf /usr/share/nginx/html
+
+EXPOSE 80

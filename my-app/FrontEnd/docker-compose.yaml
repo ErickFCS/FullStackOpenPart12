@@ -1,0 +1,11 @@
+services:
+  app:
+    container_name: app
+    image: my-app-frontend
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
